@@ -70,6 +70,7 @@ import json
 from io import StringIO
 from multiprocessing import Queue, Process, Value, cpu_count
 from timeit import default_timer
+from xml.sax.saxutils import escape
 
 
 PY2 = sys.version_info[0] == 2
@@ -573,6 +574,7 @@ class Extractor(object):
             for line in text:
                 if out == sys.stdout:   # option -a or -o -
                     line = line.encode('utf-8')
+                line = escape(line)
                 out.write(line)
                 out.write('\n')
             out.write(footer)
@@ -594,7 +596,7 @@ class Extractor(object):
             ns = self.title[:colon]
             pagename = self.title[colon+1:]
         else:
-            ns = '' # Main
+            ns = '' # it.unipg.lorenzoranucci.Main
             pagename = self.title
         self.magicWords['NAMESPACE'] = ns
         self.magicWords['NAMESPACENUMBER'] = options.knownNamespaces.get(ns, '0')
@@ -630,6 +632,7 @@ class Extractor(object):
         text = self.wiki2text(text)
         text = compact(self.clean(text))
         text = [title_str] + text
+	
         
         if sum(len(line) for line in text) < options.min_text_length:
             return
